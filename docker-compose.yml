@@ -1,0 +1,16 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      args:
+        UID: $UID
+        GID: $GID
+        UNAME: $UNAME
+    user: "${UID}:${GID}"
+    env_file:
+      - .env
+    volumes:
+      - ./:/opt/app
+    working_dir: /opt/app/src
+    command: bash -c "xvfb-run --auto-servernum --server-args='-screen 0, 1024x768x24' -- python main.py > /dev/null"
