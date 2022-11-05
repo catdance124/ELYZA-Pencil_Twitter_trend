@@ -12,7 +12,6 @@ class Twitter():
         CONSUMER_SECRET = os.environ.get('TWITTER_CONSUMER_SECRET')
         ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
         ACCESS_SECRET = os.environ.get('TWITTER_ACCESS_SECRET')
-        ACCESS_TOKEN_PKCE = os.environ.get('TWITTER_ACCESS_TOKEN_PKCE')
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
         self.api_v1 = tweepy.API(auth)

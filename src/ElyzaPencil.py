@@ -28,7 +28,7 @@ class Elyza_Pencil():
         checkbox.click()
         button = self.driver.find_elements(By.XPATH, '//button[text()="AI執筆スタート"]')[0]
         button.click()
-        sleep(10)
+        sleep(15)
         result_url = self.driver.current_url
         return result_url
     
