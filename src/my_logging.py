@@ -13,4 +13,4 @@ def get_my_logger(name):
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] [%(name)s] %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    return 
+    return logger

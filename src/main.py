@@ -1,7 +1,7 @@
-from pip import main
+import os, sys
+import random
 from ElyzaPencil import generate
 import tweepy
-import os
 from my_logging import get_my_logger
 logger = get_my_logger(__name__)
 
@@ -16,7 +16,13 @@ class Twitter():
         auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
         auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
         self.api_v1 = tweepy.API(auth)
-        self.client_v2 = tweepy.Client(ACCESS_TOKEN_PKCE)
+        self.client_v2 = tweepy.Client(
+            consumer_key = CONSUMER_KEY,
+            consumer_secret = CONSUMER_SECRET,
+            access_token = ACCESS_TOKEN,
+            access_token_secret = ACCESS_SECRET
+        )
+
 
     def get_trends(self):
         woeid = {'東京': 1118370}
@@ -27,15 +33,19 @@ class Twitter():
         return trend_words
     
     def tweet(self, text):
-        return 0
-
-
+        return self.client_v2.create_tweet(text=text)
 
 if __name__ == "__main__":
     twitter = Twitter()
     trend_words = twitter.get_trends()
-
-    keywords = trend_words[:5]
-    res = generate(keywords)
-    print(res)
-    {'draft_id': '15718759913312897990', 'keywords': ['いい感じ', '天気が悪い'], 'kind': 'news', 'status': 'success', 'title': '天気の悪い日はいい感じに距離が縮まる!?男子が思う「いい感じの彼女」の特徴4つ', 'content': '天気の悪い日に「いいな」と思う女性の特徴を22〜39歳の社会人男性に聞いた。気遣いができる、雰囲気がいい、笑顔がかわいい。服装がオシャレである、いい感じの関係が続いている。'}
+    keywords = random.sample(trend_words, k=6)
+    ep_res = generate(keywords)
+    if 'error_code' in ep_res.keys():
+        logger.error(ep_res)
+        sys.exit()
+    if not ep_res['status'] == 'success':
+        logger.error(ep_res)
+        sys.exit()
+    logger.info(ep_res)
+    tweet_res = twitter.tweet(ep_res['content'])
+    logger.info(tweet_res)
