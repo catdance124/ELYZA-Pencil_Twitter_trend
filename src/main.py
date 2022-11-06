@@ -32,8 +32,9 @@ class Twitter():
             trend_words.append(trend['name'])
         return trend_words
     
-    def tweet(self, text):
-        return self.client_v2.create_tweet(text=text)
+    def tweet(self, text, tweet_id=None):
+        return self.client_v2.create_tweet(text=text, in_reply_to_tweet_id=tweet_id)
+
 
 if __name__ == "__main__":
     create_line(logger, "START")
@@ -58,8 +59,10 @@ if __name__ == "__main__":
             sleep(5)
         if tweet_text is None:
             sys.exit()
-        tweet_res = twitter.tweet(tweet_text)
         create_line(logger, "TWEETED")
+        tweet_res = twitter.tweet(tweet_text)
         logger.info(tweet_res)
+        reply_tweet_res = twitter.tweet("\n".join(ep_res['keywords']), tweet_res.data['id'])
+        logger.info(reply_tweet_res)
     finally:
         create_line(logger, "END")
