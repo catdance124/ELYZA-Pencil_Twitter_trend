@@ -1,5 +1,6 @@
 import os, sys
 import random
+from time import sleep
 from ElyzaPencil import generate
 import tweepy
 from my_logging import get_my_logger, create_line
@@ -39,18 +40,25 @@ if __name__ == "__main__":
     twitter = Twitter()
     try:
         trend_words = twitter.get_trends()
-        keywords = random.sample(trend_words, k=6)
-        ep_res = generate(keywords)
+        tweet_text = None
         create_line(logger, "GENERATED")
-        if 'error_code' in ep_res.keys():
-            logger.error(ep_res)
+        for i in range(5):
+            keywords = random.sample(trend_words, k=6)
+            ep_res = generate(keywords)
+            if 'error_code' in ep_res.keys():
+                logger.error(ep_res)
+                continue
+            if not ep_res['status'] == 'success':
+                logger.error(ep_res)
+                continue
+            if ep_res['status'] == 'success':
+                logger.info(ep_res)
+                tweet_text = ep_res['content']
+                break
+            sleep(5)
+        if tweet_text is None:
             sys.exit()
-        if not ep_res['status'] == 'success':
-            logger.error(ep_res)
-            sys.exit()
-        else:
-            logger.info(ep_res)
-        tweet_res = twitter.tweet(ep_res['content'])
+        tweet_res = twitter.tweet(tweet_text)
         create_line(logger, "TWEETED")
         logger.info(tweet_res)
     finally:
