@@ -14,3 +14,6 @@ def get_my_logger(name):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+def create_line(logger, text: str, n: int=50):
+    logger.info(text + " " + "="*(n-len(text)))

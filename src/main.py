@@ -2,7 +2,7 @@ import os, sys
 import random
 from ElyzaPencil import generate
 import tweepy
-from my_logging import get_my_logger
+from my_logging import get_my_logger, create_line
 logger = get_my_logger(__name__)
 
 
@@ -35,16 +35,23 @@ class Twitter():
         return self.client_v2.create_tweet(text=text)
 
 if __name__ == "__main__":
+    create_line(logger, "START")
     twitter = Twitter()
-    trend_words = twitter.get_trends()
-    keywords = random.sample(trend_words, k=6)
-    ep_res = generate(keywords)
-    if 'error_code' in ep_res.keys():
-        logger.error(ep_res)
-        sys.exit()
-    if not ep_res['status'] == 'success':
-        logger.error(ep_res)
-        sys.exit()
-    logger.info(ep_res)
-    tweet_res = twitter.tweet(ep_res['content'])
-    logger.info(tweet_res)
+    try:
+        trend_words = twitter.get_trends()
+        keywords = random.sample(trend_words, k=6)
+        ep_res = generate(keywords)
+        create_line(logger, "GENERATED")
+        if 'error_code' in ep_res.keys():
+            logger.error(ep_res)
+            sys.exit()
+        if not ep_res['status'] == 'success':
+            logger.error(ep_res)
+            sys.exit()
+        else:
+            logger.info(ep_res)
+        tweet_res = twitter.tweet(ep_res['content'])
+        create_line(logger, "TWEETED")
+        logger.info(tweet_res)
+    finally:
+        create_line(logger, "END")
